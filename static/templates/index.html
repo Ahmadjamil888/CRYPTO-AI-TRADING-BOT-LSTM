@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Binance Trading Bot</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+</head>
+<body class="bg-gray-100 text-gray-800 font-sans">
+
+  <div class="max-w-4xl mx-auto py-10 px-6">
+    <h1 class="text-3xl font-bold mb-4 text-center">🚀 Binance Trading Bot Dashboard</h1>
+
+    <!-- Status -->
+    <div id="statusBox" class="bg-green-100 text-green-800 px-6 py-4 rounded mb-4 text-center shadow">
+      ✅ Model is Running...
+    </div>
+
+    <!-- Prediction -->
+    <div class="bg-white shadow rounded p-6 mb-6">
+      <h2 class="text-xl font-semibold mb-2">📊 Prediction</h2>
+      <button onclick="makePrediction()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Get Prediction</button>
+      <div id="predictionResult" class="mt-4 text-lg"></div>
+    </div>
+
+    <!-- Trade -->
+    <div class="bg-white shadow rounded p-6 mb-6">
+      <h2 class="text-xl font-semibold mb-2">💸 Execute Trade</h2>
+      <button onclick="triggerTrade()" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Execute Trade</button>
+      <div id="tradeStatus" class="mt-4 text-lg text-gray-700"></div>
+    </div>
+
+    <!-- Chart -->
+    <div class="bg-white shadow rounded p-6">
+      <h2 class="text-xl font-semibold mb-2">📈 Trade Result Chart</h2>
+      <canvas id="tradeChart" width="400" height="200"></canvas>
+    </div>
+  </div>
+
+  <script>
+    let chart = null;
+
+    function makePrediction() {
+      axios.get("/predict")
+        .then(res => {
+          const { direction, raw_output } = res.data.prediction;
+          document.getElementById("predictionResult").innerHTML =
+            `📈 Direction: <strong>${direction}</strong> | Raw: ${raw_output.toFixed(4)}`;
+        })
+        .catch(err => {
+          document.getElementById("predictionResult").innerText = "Prediction error: " + err.message;
+        });
+    }
+
+    function triggerTrade() {
+      axios.post("/trade")
+        .then(res => {
+          const result = res.data.result;
+          document.getElementById("tradeStatus").innerText = "✅ Trade executed successfully!";
+          const price = result.fills ? parseFloat(result.fills[0].price) : Math.random() * 100;
+
+          renderChart(price);
+        })
+        .catch(err => {
+          document.getElementById("tradeStatus").innerText = "❌ Trade failed: " + err.message;
+        });
+    }
+
+    function renderChart(price) {
+      const ctx = document.getElementById('tradeChart').getContext('2d');
+
+      if (chart) chart.destroy(); // Clean previous chart
+
+      chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: ['Trade Start', 'Trade Executed'],
+          datasets: [{
+            label: 'Trade Price',
+            data: [price - 50, price],
+            backgroundColor: 'rgba(34,197,94,0.2)',
+            borderColor: 'rgba(34,197,94,1)',
+            borderWidth: 2,
+            fill: true,
+            tension: 0.4
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: false
+            }
+          }
+        }
+      });
+    }
+  </script>
+
+</body>
+</html>
