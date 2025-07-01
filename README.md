@@ -20,29 +20,6 @@ This project is a deep learning-based cryptocurrency trading bot built using Lon
 - Flask (for frontend display and interaction)
 - Git & GitHub for version control
 
-## File Structure
-
-```
-crypto-ai-trading-bot/
-│
-├── model/                 # LSTM model training and prediction
-│   ├── train.py
-│   └── predict.py
-│
-├── data/                  # Datasets and processing scripts
-│   └── fetch_data.py
-│
-├── server/                # Backend API (Flask)
-│   ├── app.py
-│   └── routes.py
-│
-├── client/                # Frontend (HTML/CSS/JS or framework)
-│   └── index.html
-│
-├── requirements.txt       # Python dependencies
-├── .gitignore
-└── README.md              # Project documentation
-```
 
 ## Installation
 
@@ -50,7 +27,7 @@ crypto-ai-trading-bot/
 
 ```bash
 git clone https://github.com/Ahmadjamil888/CRYPTO-AI-TRADING-BOT-LSTM.git
-cd CRYPTO-AI-TRADING-BOT-LSTM
+cd binance_trading_bot
 ```
 
 2. Install dependencies:
